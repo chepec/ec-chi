@@ -17,14 +17,14 @@ amperometry2df <- function(datafilename, wearea = 1) {
    ## Value:
    ##   Dataframe with the following columns (and no extra attributes):
    ##   $ sampleid        : chr
-   ##   $ time            : num
-   ##   $ current         : num
-   ##   $ currentdensity  : num
-   ##   $ timediff        : num
-   ##   $ dIdt            : num
+   ##   $ time            : num [seconds]
+   ##   $ current         : num [ampere]
+   ##   $ currentdensity  : num [ampere per square cm]
+   ##   $ timediff        : num [seconds]
+   ##   $ dIdt            : num 
    ##   $ didt            : num
-   ##   $ charge          : num
-   ##   $ chargedensity   : num
+   ##   $ charge          : num [coulomb]
+   ##   $ chargedensity   : num [coulomb per square cm]
    ##   $ InitE           : num
    ##   $ SampleInterval  : num
    ##   $ RunTime         : num
@@ -87,8 +87,8 @@ amperometry2df <- function(datafilename, wearea = 1) {
    dIdt <- currentdiff / timediff
    didt <- currentdensitydiff / timediff
    # Calculate charge and charge density
-   charge <- cumsum(ff$current)
-   chargedensity <- cumsum(ff$currentdensity)
+   charge <- cumsum(ff$current * timediff)
+   chargedensity <- cumsum(ff$currentdensity * timediff)
    # Update ff dataframe
    ff <- cbind(ff, 
             timediff = timediff, 

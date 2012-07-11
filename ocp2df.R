@@ -16,18 +16,8 @@ ocp2df <- function(datafilename) {
    ##   Dataframe with the following columns (and no extra attributes):
    ##   $ sampleid        : chr
    ##   $ time            : num
-   ##   $ current         : num
-   ##   $ currentdensity  : num
-   ##   $ timediff        : num
-   ##   $ dIdt            : num
-   ##   $ didt            : num
-   ##   $ charge          : num
-   ##   $ chargedensity   : num
-   ##   $ InitE           : num
-   ##   $ SampleInterval  : num
+   ##   $ potential       : num
    ##   $ RunTime         : num
-   ##   $ QuietTime       : num
-   ##   $ Sensitivity     : num
    ## Note:
    ##   The CH Instruments 760 potentiostat records all data 
    ##   using standard SI units, therefore this function
