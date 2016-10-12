@@ -1,4 +1,4 @@
-source("/home/taha/chepec/chetex/common/R/common/ProvideSampleId.R")
+source(HomeByHost("/home/taha/chepec/chetex/common/R/common/ProvideSampleId.R"))
 
 ##################################################
 ################# chronocm2df ####################
