@@ -1,51 +1,23 @@
-source(HomeByHost("/home/taha/chepec/chetex/common/R/common/ProvideSampleId.R"))
-
-##################################################
-################### mps2df #######################
-##################################################
+#' Read time vs current data from CHI760
+#'
+#'  Reads time vs current data (from CHI 760 potentiostat)
+#'  and returns a dataframe with the data and the data attributes (experimental conditions).
+#'
+#' @param datafilename  path to data file
+#' @param wearea        WE area in sqcm (defaults to 1)
+#'
+#' @return dataframe
+#' @export
 mps2df <- function(datafilename, wearea = 1) {
-   ## Description:
-   ##   Reads time vs current data (from CHI 760 potentiostat)
-   ##   and returns a dataframe with the data and 
-   ##   the data attributes (experimental conditions).
-   ## Usage:
-   ##   mps2df(datafilename, wearea)
-   ## Arguments:
-   ##   datafilename: text string with full path to experimental file
-   ##         wearea: working electrode area in square centimeters (optional)
-   ## Value:
-   ##   Dataframe with the following columns (and no extra attributes):
-   ##   $ sampleid        : chr
-   ##   $ time            : num [seconds]
-   ##   $ current         : num [ampere]
-   ##   $ currentdensity  : num [ampere per square cm]
-   ##   $ timediff        : num [seconds]
-   ##   $ dIdt            : num
-   ##   $ didt            : num
-   ##   $ charge          : num [coulomb]
-   ##   $ chargedensity   : num [coulomb per square cm]
-   ##   $ PotentialSteps  : num
-   ##   $ TimeSteps       : num
-   ##   $ Cycle           : num
-   ##   $ SampleInterval  : num
-   ##   $ QuietTime       : num
-   ##   $ Sensitivity     : num
-   ## Note:
-   ##   The CH Instruments 760 potentiostat records all data 
-   ##   using standard SI units, therefore this function
-   ##   assumes all potential values to be in volts, 
-   ##   currents to be in amperes, charges in Coulombs, 
-   ##   time in seconds, and so on.
-   #
    datafile <- file(datafilename, "r")
    chifile <- readLines(datafile, n = -1) #read all lines of input file
    close(datafile)
    #
-   sampleid <- ProvideSampleId(datafilename)
+   sampleid <- common::ProvideSampleId(datafilename)
    #
    rgxp.number <- "^\\-?\\d+\\.\\d+[e,]"
    # regexp that matches a decimal number at the beginning of the line.
-   # Matches numbers with or without a negative sign (hyphen), 
+   # Matches numbers with or without a negative sign (hyphen),
    # followed by one digit before the decimal, a decimal point,
    # and an arbitrary number of digits after the decimal point,
    # immediately followed by either the letter 'e' or a comma.
@@ -90,24 +62,24 @@ mps2df <- function(datafilename, wearea = 1) {
    charge <- cumsum(ff$current * timediff)
    chargedensity <- cumsum(ff$currentdensity * timediff)
    # Update ff dataframe
-   ff <- cbind(ff, 
-      timediff = timediff, 
-      dIdt = dIdt, 
+   ff <- cbind(ff,
+      timediff = timediff,
+      dIdt = dIdt,
       didt = didt,
-      charge = charge, 
+      charge = charge,
       chargedensity = chargedensity)
    #
    ### Collect attributes of this experiment
    # Potential steps
    PotentialSteps <- ""
    positions.PotentialSteps <- regexpr("^E\\d+\\s\\(V\\)", chifile)
-   PotentialSteps <- paste("\\num{", strsplit(chifile[which(positions.PotentialSteps == 1)], 
+   PotentialSteps <- paste("\\num{", strsplit(chifile[which(positions.PotentialSteps == 1)],
       "\\s=\\s")[[1]][2], "}", sep = "")
    if (length(which(positions.PotentialSteps == 1)) > 1) {
       for (i in 2:length(which(positions.PotentialSteps == 1))) {
-      PotentialSteps <- 
-         paste(PotentialSteps, 
-            paste("\\num{", strsplit(chifile[which(positions.PotentialSteps == 1)], 
+      PotentialSteps <-
+         paste(PotentialSteps,
+            paste("\\num{", strsplit(chifile[which(positions.PotentialSteps == 1)],
             "\\s=\\s")[[i]][2], "}", sep = ""), sep = ", ")
       }
    }
@@ -115,13 +87,13 @@ mps2df <- function(datafilename, wearea = 1) {
    # Time steps
    TimeSteps <- ""
    positions.TimeSteps <- regexpr("^T\\d+\\s\\(s\\)", chifile)
-   TimeSteps <- paste("\\num{", strsplit(chifile[which(positions.TimeSteps == 1)], 
+   TimeSteps <- paste("\\num{", strsplit(chifile[which(positions.TimeSteps == 1)],
       "\\s=\\s")[[1]][2], "}", sep = "")
    if (length(which(positions.TimeSteps == 1)) > 1) {
       for (i in 2:length(which(positions.TimeSteps == 1))) {
-      TimeSteps <- 
-         paste(TimeSteps, 
-            paste("\\num{", strsplit(chifile[which(positions.TimeSteps == 1)], 
+      TimeSteps <-
+         paste(TimeSteps,
+            paste("\\num{", strsplit(chifile[which(positions.TimeSteps == 1)],
             "\\s=\\s")[[i]][2], "}", sep = ""), sep = ", ")
       }
    }

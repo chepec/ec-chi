@@ -1,0 +1,16 @@
+Package: chi760c
+Type: Package
+Title: Collection of scripts for reading data from CHI760 potentiostat/
+    galvanostat
+Version: 0.1.0
+Description: Collection of scripts for reading data from CHI760 potentiostat/
+    galvanostat.
+Authors@R: person("Taha", "Ahmed", email = "taha@chepec.se", role = c("aut", "cre"))
+License: GPL-3
+LazyData: TRUE
+Imports:
+    common,
+    dplyr,
+    lubridate,
+    tidyr
+RoxygenNote: 5.0.1

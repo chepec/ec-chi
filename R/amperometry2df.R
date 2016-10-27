@@ -1,51 +1,44 @@
-source(HomeByHost("/home/taha/chepec/chetex/common/R/common/ProvideSampleId.R"))
-
-##################################################
-############### amperometry2df ###################
-##################################################
+#' Read amperometry data from CHI760
+#'
+#' Reads current-time data (from CHI 760 potentiostat)
+#' and returns a dataframe with the data,
+#' the data attributes (experimental conditions),
+#' and some calculated parameters (charge, didt, etc.)
+#'
+#' @param datafilename text string with full path to experimental file
+#' @param wearea       (optional) area of working electrode (in square centimeter)
+#'
+#' @details The CH Instruments 760 potentiostat records all data using
+#'    standard SI units, therefore this function assumes all potentials
+#'    to be in volts, currents to be in amperes, charges in Coulombs,
+#'    time in seconds, and so on.
+#'
+#' @return Dataframe with the following columns (and no extra attributes):
+#'    $ sampleid        : chr
+#'    $ time            : num [seconds]
+#'    $ current         : num [ampere]
+#'    $ currentdensity  : num [ampere per square cm]
+#'    $ timediff        : num [seconds]
+#'    $ dIdt            : num
+#'    $ didt            : num
+#'    $ charge          : num [coulomb]
+#'    $ chargedensity   : num [coulomb per square cm]
+#'    $ InitE           : num
+#'    $ SampleInterval  : num
+#'    $ RunTime         : num
+#'    $ QuietTime       : num
+#'    $ Sensitivity     : num
+#' @export
 amperometry2df <- function(datafilename, wearea = 1) {
-   ## Description:
-   ##   Reads current-time data (from CHI 760 potentiostat)
-   ##   and returns a dataframe with the data, 
-   ##   the data attributes (experimental conditions),
-   ##   and some calculated parameters (charge, didt, etc.) 
-   ## Usage:
-   ##   amperometry2df(datafilename, wearea)
-   ## Arguments:
-   ##   datafilename: text string with full path to experimental file
-   ##         wearea: (optional) area of working electrode (in square centimeter)
-   ## Value:
-   ##   Dataframe with the following columns (and no extra attributes):
-   ##   $ sampleid        : chr
-   ##   $ time            : num [seconds]
-   ##   $ current         : num [ampere]
-   ##   $ currentdensity  : num [ampere per square cm]
-   ##   $ timediff        : num [seconds]
-   ##   $ dIdt            : num 
-   ##   $ didt            : num
-   ##   $ charge          : num [coulomb]
-   ##   $ chargedensity   : num [coulomb per square cm]
-   ##   $ InitE           : num
-   ##   $ SampleInterval  : num
-   ##   $ RunTime         : num
-   ##   $ QuietTime       : num
-   ##   $ Sensitivity     : num
-   ## Note:
-   ##   The CH Instruments 760 potentiostat records all data 
-   ##   using standard SI units, therefore this function
-   ##   assumes all potential values to be in volts, 
-   ##   currents to be in amperes, charges in Coulombs, 
-   ##   time in seconds, and so on.
-   #
    datafile <- file(datafilename, "r")
    chifile <- readLines(datafile, n = -1) #read all lines of input file
    close(datafile)
    #
-   sampleid <- ProvideSampleId(datafilename)
+   sampleid <- common::ProvideSampleId(datafilename)
    #
    rgxp.number <- "^\\-?\\d\\.\\d+[e,]"
    # regexp that matches a decimal number at the beginning of the line.
-   # Matches numbers with or without a negative sign (hyphen), 
+   # Matches numbers with or without a negative sign (hyphen),
    # followed by one digit before the decimal, a decimal point,
    # and an arbitrary number of digits after the decimal point,
    # immediately followed by either the letter 'e' or a comma.
@@ -90,11 +83,11 @@ amperometry2df <- function(datafilename, wearea = 1) {
    charge <- cumsum(ff$current * timediff)
    chargedensity <- cumsum(ff$currentdensity * timediff)
    # Update ff dataframe
-   ff <- cbind(ff, 
-            timediff = timediff, 
-            dIdt = dIdt, 
+   ff <- cbind(ff,
+            timediff = timediff,
+            dIdt = dIdt,
             didt = didt,
-            charge = charge, 
+            charge = charge,
             chargedensity = chargedensity)
    #
    ### Collect attributes of this experiment

@@ -1,51 +1,42 @@
-source(HomeByHost("/home/taha/chepec/chetex/common/R/common/ProvideSampleId.R"))
-
-##################################################
-################### lsv2df #######################
-##################################################
+#' Read linear-scan voltammetry data from CHI760
+#'
+#' Reads LSV datafiles from CHI 760 potentiostat (potential, current, and charge)
+#' and returns a dataframe with the data, the data attributes (experimental conditions),
+#' and calculated current density and charge density.
+#'
+#' @param datafilename  text string with full path to experimental file
+#' @param wearea        (optional) area of working electrode (in sqcm)
+#'
+#' @details The CH Instruments 760 potentiostat records all data using
+#'    standard SI units, therefore this function assumes all potentials
+#'    to be in volts, currents to be in amperes, charges in Coulombs,
+#'    time in seconds, and so on.
+#'
+#' @return Dataframe with the following columns (and no extra attributes):
+#'    $ sampleid        : chr (id)
+#'    $ segment         : num (id)
+#'    $ potential       : num (measure)
+#'    $ current         : num (measure)
+#'    $ charge          : num (measure)
+#'    $ currentdensity  : num (measure)
+#'    $ chargedensity   : num (measure)
+#'    $ InitE           : num (id)
+#'    $ FinalE          : num (id)
+#'    $ ScanRate        : num (id)
+#'    $ SampleInterval  : num (id)
+#'    $ QuietTime       : num (id)
+#'    $ Sensitivity     : num (id)
+#' @export
 lsv2df <- function(datafilename, wearea = 1) {
-   ## Description:
-   ##   Reads LSV datafiles from CHI 760 potentiostat
-   ##   (potential, current, and charge)
-   ##   and returns a dataframe with the data, 
-   ##   the data attributes (experimental conditions),
-   ##   and calculated current density and charge density.
-   ## Usage:
-   ##   lsv2df(datafilename, wearea)
-   ## Arguments:
-   ##   datafilename: text string with full path to experimental file
-   ##         wearea: (optional) area of working electrode (in square centimeter)
-   ## Value:
-   ##   Dataframe with the following columns (and no extra attributes):
-   ##   $ sampleid        : chr (id)
-   ##   $ segment         : num (id)
-   ##   $ potential       : num (measure)
-   ##   $ current         : num (measure)
-   ##   $ charge          : num (measure)
-   ##   $ currentdensity  : num (measure)
-   ##   $ chargedensity   : num (measure)
-   ##   $ InitE           : num (id)
-   ##   $ FinalE          : num (id)
-   ##   $ ScanRate        : num (id)
-   ##   $ SampleInterval  : num (id)
-   ##   $ QuietTime       : num (id)
-   ##   $ Sensitivity     : num (id)
-   ## Note:
-   ##   The CH Instruments 760 potentiostat records all data 
-   ##   using standard SI units, therefore this function
-   ##   assumes all potential values to be in volts, 
-   ##   currents to be in amperes, charges in Coulombs, 
-   ##   time in seconds, and so on.
-   #
    lsvfile <- file(datafilename, "r")
    chifile <- readLines(lsvfile, n = -1) #read all lines of input file
    close(lsvfile)
    #
-   sampleid <- ProvideSampleId(datafilename)
+   sampleid <- common::ProvideSampleId(datafilename)
    #
    rgxp.number <- "^\\-?\\d\\.\\d+,"
    # regexp that matches a decimal number at the beginning of the line.
-   # Matches numbers with or without a negative sign (hyphen), 
+   # Matches numbers with or without a negative sign (hyphen),
    # followed by one digit before the decimal, a decimal point,
    # and an arbitrary number of digits after the decimal point,
    # immediately followed by a comma.

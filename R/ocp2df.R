@@ -1,39 +1,25 @@
-source(HomeByHost("/home/taha/chepec/chetex/common/R/common/ProvideSampleId.R"))
-
-##################################################
-################### ocp2df #######################
-##################################################
+#' Read time vs potential data from CHI760
+#'
+#' Reads time vs potential data from CHI760
+#'
+#' @param datafilename string with full path to experimental file
+#'#'
+#' @return Dataframe with the following columns (and no extra attributes):
+#'    $ sampleid        : chr
+#'    $ time            : num
+#'    $ potential       : num
+#'    $ RunTime         : num
+#' @export
 ocp2df <- function(datafilename) {
-   ## Description:
-   ##   Reads time vs potential data (from CHI 760 potentiostat)
-   ##   and returns a dataframe with the data and 
-   ##   the data attributes (experimental conditions).
-   ## Usage:
-   ##   ocp2df(datafilename)
-   ## Arguments:
-   ##   datafilename: text string with full path to experimental file
-   ## Value:
-   ##   Dataframe with the following columns (and no extra attributes):
-   ##   $ sampleid        : chr
-   ##   $ time            : num
-   ##   $ potential       : num
-   ##   $ RunTime         : num
-   ## Note:
-   ##   The CH Instruments 760 potentiostat records all data 
-   ##   using standard SI units, therefore this function
-   ##   assumes all potential values to be in volts, 
-   ##   currents to be in amperes, charges in Coulombs, 
-   ##   time in seconds, and so on.
-   #
    datafile <- file(datafilename, "r")
    chifile <- readLines(datafile, n = -1) #read all lines of input file
    close(datafile)
    #
-   sampleid <- ProvideSampleId(datafilename)
+   sampleid <- common::ProvideSampleId(datafilename)
    #
    rgxp.number <- "^\\-?\\d\\.\\d+[e,]"
    # regexp that matches a decimal number at the beginning of the line.
-   # Matches numbers with or without a negative sign (hyphen), 
+   # Matches numbers with or without a negative sign (hyphen),
    # followed by one digit before the decimal, a decimal point,
    # and an arbitrary number of digits after the decimal point,
    # immediately followed by either the letter 'e' or a comma.

@@ -1,23 +1,24 @@
-source(HomeByHost("/home/taha/chepec/chetex/common/R/common/ProvideSampleId.R"))
-
-##################################################
-################# chronocm2df ####################
-##################################################
+#' Read chronocoulometry data from CHI760
+#'
+#' @param datafilename full path to datafile
+#'
+#' @details The CH Instruments 760 potentiostat records all data using
+#'    standard SI units, therefore this function assumes all potentials
+#'    to be in volts, currents to be in amperes, charges in Coulombs,
+#'    time in seconds, and so on.
+#'
+#' @return dataframe with data
+#' @export
 chronocm2df <- function(datafilename) {
-   # Function description: chronocoulometry data
-   # CH Instruments potentiostat records all data using standard SI units,
-   # so all potential values are in volts, currents are in amperes,
-   # charges in Coulombs, time in seconds, etc.
-   #
    datafile <- file(datafilename, "r")
    chifile <- readLines(datafile, n = -1) #read all lines of input file
    close(datafile)
    #
-   sampleid <- ProvideSampleId(datafilename)
+   sampleid <- common::ProvideSampleId(datafilename)
    #
    rgxp.number <- "^\\-?\\d\\.\\d+[e,]"
    # regexp that matches a decimal number at the beginning of the line.
-   # Matches numbers with or without a negative sign (hyphen), 
+   # Matches numbers with or without a negative sign (hyphen),
    # followed by one digit before the decimal, a decimal point,
    # and an arbitrary number of digits after the decimal point,
    # immediately followed by either the letter 'e' or a comma.
