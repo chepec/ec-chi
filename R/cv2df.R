@@ -10,7 +10,7 @@
 #'
 #' @return dataframe with data
 #' @export
-cv2df <- function(datafilename, wearea = 1, ncol = 3) {
+cv2df <- function(datafilename, wearea = 1) {
    cvfile <- file(datafilename, "r")
    chifile <- readLines(cvfile, n = -1) #read all lines of input file
    close(cvfile)
@@ -44,14 +44,9 @@ cv2df <- function(datafilename, wearea = 1, ncol = 3) {
    for (s in 1:length(starts)) {
       zz <- textConnection(chifile[starts[s]:ends[s]], "r")
       ff <- rbind(ff,
-               data.frame(sampleid,
-                          cycle = as.integer(ceiling(s/2)),
-                          segment = s,
-                          matrix(scan(zz,
-                                      what = numeric(),
-                                      sep = ","),
-                                 ncol = ncol,
-                                 byrow = T)))
+               data.frame(sampleid, cycle = as.integer(ceiling(s/2)), segment = s,
+               matrix(scan(zz, what = numeric(), sep = ","),
+                  ncol = 3, byrow = T)))
       close(zz)
    }
    # Column names after initial assignment
